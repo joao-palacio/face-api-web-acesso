@@ -1,6 +1,6 @@
 
 const video = document.getElementById('video');
-var bottom = document.getElementById('boxCamera');
+var box = document.getElementById('boxCamera');
 var borda = document.getElementById('borda');
 
 //var lbStatus = document.getElementById('lbStatus');
@@ -12,6 +12,8 @@ const PUSH_FACE = "Afaste o rosto"
 const screenWidth = screen.width;
 const screenHeight = screen.height;
 
+const isMobile = detectar_mobile();
+
 Promise.all([
   faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
   faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
@@ -21,36 +23,60 @@ Promise.all([
 
 function startVideo() {
 
-  if(detectar_mobile) {
+  if (isMobile) {
 
-  }else{
-    
+    console.log("WEB");
+    document.body.classList.add("body-mob");
+
+    navigator.getUserMedia(
+      {
+        video: {
+          width: { min: 480, ideal: 720, max: 1080 },
+          height: { min: 640, ideal: 1280, max: 1920 },
+          advanced: [
+            { width: 1280, height: 1920 },
+            { aspectRatio: 9 / 16 }
+          ], facingMode: 'user'
+        }
+      },
+      stream => video.srcObject = stream,
+      err => console.error(err)
+    )
+
+  } else {
+
+    console.log("WEB");
+
+    document.body.classList.add("body-web");
+
+    navigator.getUserMedia(
+      {
+        video: { width: 1080, height: 720 }
+      },
+      stream => video.srcObject = stream,
+      err => console.error(err)
+    )
+
   }
 
-  navigator.getUserMedia(
-    {
-      video: {
-        width: { min: 480, ideal: 720, max: 1080 },
-        height: { min: 640, ideal: 1280, max: 1920 },
-        advanced: [
-          { width: 1280, height: 1920 },
-          { aspectRatio: 9 / 16 }
-        ], facingMode: 'user'
-      }
-    },
-    stream => video.srcObject = stream,
-    err => console.error(err)
-  )
+
 }
 
 
 //video.setAttribute("style", "-webkit-transform: scaleX(-1);  transform: scaleX(-1);");
 
 video.addEventListener('play', () => {
+
   const canvas = faceapi.createCanvasFromMedia(video)
   document.body.append(canvas)
 
-  const displaySize = { width: screenWidth, height: screenHeight }
+  var displaySize;
+
+  if (isMobile) {
+    displaySize = { width: screenWidth, height: screenHeight }
+  } else {
+    displaySize = { width: canvas.width, height: canvas.height }
+  }
 
   var image = new Image();
 
@@ -92,13 +118,16 @@ video.addEventListener('play', () => {
         var rEyeY = landmarks1.getRightEye()[0]._y;
 
         // JawOutline 
-         var jX_min = landmarks1.getJawOutline()[0];
-         var jX_max = landmarks1.getJawOutline()[landmarks1.getJawOutline().length - 1]._x;
+        var jX_min = landmarks1.getJawOutline()[0];
+        var jX_max = landmarks1.getJawOutline()[landmarks1.getJawOutline().length - 1]._x;
 
         var boxSideLeft = detections.detection.box.left;
         var boxSideRight = detections.detection.box.right;
         var boxSideTop = detections.detection.box.top;
+        var boxSideBottom = detections.detection.box.bottom;
+
         var boxWidth = detections.detection.box.width;
+        var boxHeight = detections.detection.box.height;
 
         // console.log(detections.detection.box.top);
         // console.log(boxWidth);
@@ -111,30 +140,71 @@ video.addEventListener('play', () => {
         // console.log("diff_between_eyes " + diff_between_eyes);
 
         // Verifico a distância do rosto
-       /* if (boxWidth < ((screenWidth/5) * 3)) {
-          showError(PULL_FACE)
-          return;
-        }*/
+        /* if (boxWidth < ((screenWidth/5) * 3)) {
+           showError(PULL_FACE)
+           return;
+         }*/
 
 
-        console.log("boxW: " + (boxWidth /2 ) + "3/5: " + ((screenWidth/5) * 3));
-        if ((boxWidth/2) > ((screenWidth/5) * 3)) {
-          showError(PUSH_FACE)
-          return;
-        } 
 
-        console.log(boxWidth);
-        // Verifico a centralização horizontal da face a partir do eixo x. left: 1/5 right: 2/5  
-        if (boxSideLeft < (screenWidth / 5) || boxSideLeft > ((screenWidth / 5) * 2)) {
-          showError(CENTER_FACE)
-          return;
+
+        // console.log("boxW: " + (boxWidth /2 ) + "3/5: " + ((screenWidth/5) * 3));
+
+        if (isMobile) {
+
+          if ((boxWidth / 2) > ((screenWidth / 5) * 3)) {
+            showError(PUSH_FACE)
+            return;
+          }
+
+          // Verifico a centralização horizontal da face a partir do eixo x. left: 1/5 right: 2/5  
+          if (boxSideLeft < (screenWidth / 5) || boxSideLeft > ((screenWidth / 5) * 2)) {
+            showError(CENTER_FACE)
+            return;
+          }
+
+          // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4 
+          if (boxSideTop < (screenHeight / 4) || boxSideTop > ((screenHeight / 4) * 3)) {
+            showError(CENTER_FACE)
+            return;
+          }
+
+        } else {
+
+          console.log(screenHeight);
+          console.log(boxHeight);
+
+          // Verifico se o rosto está ocupando mais do 40% da tela. 
+          if ((boxHeight) > ((screenHeight / 100) * 40)) {
+            showError(PUSH_FACE)
+            return;
+          }
+
+          // Verifico se o rosto está ocupando mais do 40% da tela. 
+          if ((boxHeight) < (screenHeight / 4)) {
+            showError(PULL_FACE)
+            return;
+          }
+
+          // Verifico a centralização horizontal da face a partir do eixo x. left: 1/5 right: 2/5  
+          if (boxSideLeft < (screenWidth / 6) || boxSideLeft > ((screenWidth / 6) * 2)) {
+            showError(CENTER_FACE)
+            return;
+          }
+
+
+
+          // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4 
+          if (boxSideTop < (screenHeight / 5) || boxSideTop > ((screenHeight / 5) * 2)) {
+            console.log("entoru auqi");
+            showError(CENTER_FACE)
+            return;
+          }
+
         }
 
-        // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4 
-        if (boxSideTop < (screenHeight / 4) || boxSideTop > ((screenHeight / 4) * 3)) {
-          showError(CENTER_FACE)
-          return;
-        } 
+
+
 
         countSuccess++;
         if (countSuccess > 3) {
@@ -169,16 +239,16 @@ function showSuccess() {
 
 function detectar_mobile() {
   if (navigator.userAgent.match(/Android/i)
-      || navigator.userAgent.match(/webOS/i)
-      || navigator.userAgent.match(/iPhone/i)
-      || navigator.userAgent.match(/iPad/i)
-      || navigator.userAgent.match(/iPod/i)
-      || navigator.userAgent.match(/BlackBerry/i)
-      || navigator.userAgent.match(/Windows Phone/i)
+    || navigator.userAgent.match(/webOS/i)
+    || navigator.userAgent.match(/iPhone/i)
+    || navigator.userAgent.match(/iPad/i)
+    || navigator.userAgent.match(/iPod/i)
+    || navigator.userAgent.match(/BlackBerry/i)
+    || navigator.userAgent.match(/Windows Phone/i)
   ) {
-      return true;
+    return true;
   }
   else {
-      return false;
+    return false;
   }
 }
