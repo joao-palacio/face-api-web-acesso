@@ -129,33 +129,18 @@ video.addEventListener('play', () => {
         var boxWidth = detections.detection.box.width;
         var boxHeight = detections.detection.box.height;
 
-        // console.log(detections.detection.box.top);
-        // console.log(boxWidth);
-
-        // console.log(landmarks1.getJawOutline());
-        //console.log(jX_min);
-        // console.log(jX_max);
-
-        //var diff_between_eyes = rEyeX - lEyeX;
-        // console.log("diff_between_eyes " + diff_between_eyes);
-
-        // Verifico a distância do rosto
-        /* if (boxWidth < ((screenWidth/5) * 3)) {
-           showError(PULL_FACE)
-           return;
-         }*/
-
-
-
-
-        // console.log("boxW: " + (boxWidth /2 ) + "3/5: " + ((screenWidth/5) * 3));
-
         if (isMobile) {
 
           if ((boxWidth / 2) > ((screenWidth / 5) * 3)) {
             showError(PUSH_FACE)
             return;
           }
+
+        // Verifico a distância do rosto
+         if (boxWidth < ((screenWidth/5) * 3)) {
+           showError(PULL_FACE)
+           return;
+         }
 
           // Verifico a centralização horizontal da face a partir do eixo x. left: 1/5 right: 2/5  
           if (boxSideLeft < (screenWidth / 5) || boxSideLeft > ((screenWidth / 5) * 2)) {
@@ -192,8 +177,6 @@ video.addEventListener('play', () => {
             return;
           }
 
-
-
           // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4 
           if (boxSideTop < (screenHeight / 5) || boxSideTop > ((screenHeight / 5) * 2)) {
             console.log("entoru auqi");
@@ -202,9 +185,6 @@ video.addEventListener('play', () => {
           }
 
         }
-
-
-
 
         countSuccess++;
         if (countSuccess > 3) {
