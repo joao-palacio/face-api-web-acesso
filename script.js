@@ -25,7 +25,8 @@ function startVideo() {
 
   if (isMobile) {
 
-    console.log("WEB");
+    console.log("MOBILE");
+    
     document.body.classList.add("body-mob");
 
     navigator.getUserMedia(
