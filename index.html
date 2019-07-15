@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <script src="mobile-detector.js"></script>
+  <script src="platform.js"></script>
   <script defer src="face-api.min.js"></script>
   <script defer src="script.js"></script>
   <link rel="stylesheet" href="reset.css" />
@@ -41,6 +43,7 @@
       font-weight: bold;
       text-align: center;
     }
+
 
     .body-mob .video {
       width:100%;
@@ -112,6 +115,58 @@
       border: 5px solid gray;
     }
 
+    .body-web .countdown {
+      width: 100vw;
+      right: 0;
+      margin: 0 auto;
+      background: transparent;
+      display: none;
+      left: 0;
+      z-index: 9999;
+      color: gray;
+      background-color: transparent;
+      position: absolute;
+      font-weight: 100;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 300px;
+      text-align: center;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+       transform: translateY(-50%);
+    }
+
+
+    .body-mob .countdown {
+      width: 100vw;
+      right: 0;
+      margin: 0 auto;
+      background: transparent;
+      display: none;
+      left: 0;
+      z-index: 9999;
+      color: gray;
+      background-color: transparent;
+      position: absolute;
+      font-weight: 100;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 300px;
+      text-align: center;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+       transform: translateY(-50%);
+    }
+
+
+    .body-web .preview {
+      width:1080px;
+      height:720px;
+      display: none;
+      position: absolute;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+    }
+
   </style>
 </head>
 
@@ -121,6 +176,8 @@
     <video id="video" class="video" autoplay muted></video>
     <div class="borda" id="borda"></div>
     <div id="lbStatus" class="status">Aguarde...</div>
+    <div id="lbCountdown" class="countdown">3</div>
+    <img id="imgPreview" class="preview"></img>
   </div>
 
 </body>
