@@ -3,20 +3,62 @@
 
 <head>
   <meta charset="UTF-8">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
   <title>Document</title>
+
+
+  <script>
+
+    var i = 1;
+
+    var intro1 = new Image();
+    intro1.src = "intro1.png";
+    var intro2 = new Image();
+    intro2.src = "intro2.png";
+    var intro3 = new Image();
+    intro3.src = "intro3.png";
+    var intro4 = new Image();
+    intro4.src = "intro4.png";
+
+    function next() {
+      if (i >= 4) {
+        document.getElementById("divBackInst").style.display = 'none';
+        return;
+      }
+
+      if(i == 0) {
+        document.getElementById("imgPreview").src = intro.src;
+      }else if(i == 1) {
+        document.getElementById("imgPreview").src = intro2.src;
+      }else if(i == 2) {
+        document.getElementById("imgPreview").src = intro3.src;
+      }else if(i == 3) {
+        document.getElementById("imgPreview").src = intro4.src;
+      }
+
+      i++;
+
+    }
+
+  </script>
+
+
   <script src="mobile-detector.js"></script>
   <script src="platform.js"></script>
   <script defer src="face-api.min.js"></script>
   <script defer src="script.js"></script>
   <link rel="stylesheet" href="reset.css" />
   <style>
-
     body {
       width: 100vw;
       height: 100vh;
       display: flex;
+
     }
 
     canvas {
@@ -46,8 +88,8 @@
 
 
     .body-mob .video {
-      width:100%;
-      height:100%;
+      width: 100%;
+      height: 100%;
     }
 
     .body-mob .boxCam {
@@ -56,8 +98,8 @@
     }
 
     .body-mob #boxCamera {
-      width:100%;
-      height:100%;
+      width: 100%;
+      height: 100%;
     }
 
     .body-mob #boxCamera .borda {
@@ -93,13 +135,13 @@
     }
 
     .body-web .video {
-      width:1080px;
-      height:720px;
+      width: 1080px;
+      height: 720px;
     }
 
     .body-web #boxCamera {
-      width:1080px;
-      height:720px;
+      width: 1080px;
+      height: 720px;
       position: relative;
     }
 
@@ -132,7 +174,7 @@
       text-align: center;
       top: 50%;
       -ms-transform: translateY(-50%);
-       transform: translateY(-50%);
+      transform: translateY(-50%);
     }
 
 
@@ -149,37 +191,78 @@
       position: absolute;
       font-weight: 100;
       font-family: Arial, Helvetica, sans-serif;
-      font-size: 300px;
+      font-size: 150px;
       text-align: center;
       top: 50%;
       -ms-transform: translateY(-50%);
-       transform: translateY(-50%);
+      transform: translateY(-50%);
     }
 
 
     .body-web .preview {
-      width:1080px;
-      height:720px;
-      display: none;
+      width: 1080px;
+      height: 720px;
       position: absolute;
       z-index: 9999;
       top: 0;
       left: 0;
     }
 
+    .preview {
+      max-width: 100%;
+      width: 80%;
+      display: block;
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+
+    }
+
+    .body-mob .take {
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      text-align: center;
+      z-index: 999;
+      width: 70px;
+      height: 70px;
+      top: 90vh;
+      transform: translateY(-100%);
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%)
+    }
+
+    .backInst {
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      z-index: 99999;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: inline-block;
+    }
   </style>
 </head>
 
 <body>
-
+  <div id="divBackInst" class="backInst">
+    <img id="imgPreview" class="preview" src="intro.png" onclick="next()"></img>
+  </div>
   <div id="boxCamera" class="boxCamera">
-    <video id="video" class="video" autoplay muted></video>
+    <video id="video" class="video" autoplay muted playsinline></video>
     <div class="borda" id="borda"></div>
-    <div id="lbStatus" class="status">Aguarde...</div>
-    <div id="lbCountdown" class="countdown">3</div>
-    <img id="imgPreview" class="preview"></img>
+    <div id="lbStatus" class="status" style="text-align: center;  width: 100vw;">Estamos preparando tudo</div>
+    <div id="lbCountdown" class="countdown"></div>
+    <img id="icTake" class="take" src="icon_take_pic.png"></img>
+
   </div>
 
 </body>
+
+
 
 </html>

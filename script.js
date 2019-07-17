@@ -4,7 +4,7 @@ var box = document.getElementById('boxCamera');
 var borda = document.getElementById('borda');
 var lbCountdown = document.getElementById('lbCountdown');
 var imgPreview = document.getElementById('imgPreview');
-
+var icTake = document.getElementById('icTake');
 //var lbStatus = document.getElementById('lbStatus');
 
 const CENTER_FACE = "Centralize o rosto"
@@ -24,22 +24,31 @@ hasCaptured = false;
 
 const isMobile = detectar_mobile();
 
+var countNoFace = 0;
+var countSuccess = 0;
+
+if(isMobile) {
+  document.body.classList.add("body-mob");
+}else{
+  document.body.classList.add("body-web");
+}
+
 Promise.all([
   faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-
-  faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-
-  faceapi.nets.mtcnn.loadFromUri('/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-  faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-  faceapi.nets.faceExpressionNet.loadFromUri('/models')
+ // faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
 ]).then(startVideo)
+
 
 
 function startVideo() {
 
+  icTake.onclick = function () {
+    capture();
+  };
+
   var md = new MobileDetect(window.navigator.userAgent);
 
+  
   platform.name;
   platform.version;
   platform.product;
@@ -54,9 +63,8 @@ function startVideo() {
 
     console.log("MOBILE");
 
-    alert(platform.ua);
+   // alert(platform.ua);
 
-    document.body.classList.add("body-mob");
 
     var constraints;
 
@@ -69,6 +77,10 @@ function startVideo() {
     } else {
       constraints = {
 
+
+         video: { width: 1280, height: 780 }
+
+        /*
         video: {
           height: { min: 480, ideal: 720, max: 1080 },
           width: { min: 640, ideal: 1280, max: 1920 },
@@ -76,7 +88,7 @@ function startVideo() {
             { width: 1920, height: 1280 },
             { aspectRatio: 9 / 16 }
           ], facingMode: { exact: 'user' }
-        }
+        } */
 
       };
 
@@ -91,7 +103,6 @@ function startVideo() {
 
     console.log("WEB");
 
-    document.body.classList.add("body-web");
 
     navigator.getUserMedia(
       {
@@ -114,23 +125,23 @@ video.addEventListener('play', () => {
 
   var isAllow = true;
 
-  var timeToInterval = 1000;
+  var timeToInterval = 700;
 
   if (define_performance(platform.ua)) {
     timeToInterval = 500;
   }
 
-  setInterval(async () => {
-
+  setInterval(async function () {
 
     if (isAllow) {
 
-      faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 128, scoreThreshold: 0.5 })).then(detection => {
+      faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })).then(detection => {
 
         isAllow = true;
         if (detection) {
           detectFace = true;
-          showSuccess();
+
+
 
           countNoFace = 0;
 
@@ -160,7 +171,12 @@ video.addEventListener('play', () => {
 
         } else {
           detectFace = false;
-          showNeutral();
+
+          countNoFace++;
+          if (countNoFace > 3) {
+            showNeutral();
+          }
+
         }
 
       })
@@ -189,7 +205,7 @@ function bioMobile(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
     }
   } else {
 
-    if ((boxWidth - 50) > ((screenWidth / 5) * 3)) {
+    if ((boxWidth - 70) > ((screenWidth / 5) * 3)) {
       showError(PUSH_FACE)
       return;
     }
@@ -200,7 +216,7 @@ function bioMobile(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
 
   if (detectIphoneHigLevel(platform.ua)) {
     // Verifico a distância do rosto
-    if (boxWidth  < ((screenWidth / 5) * 3)) {
+    if (boxWidth < ((screenWidth / 5) * 3)) {
       showError(PULL_FACE)
       return;
     }
@@ -225,16 +241,13 @@ function bioMobile(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
   }
   else {
     // Verifico a centralização horizontal da face a partir do eixo x. left: 1/5 right: 2/5  
-    if (boxSideLeft < (screenWidth / 6)  || boxSideLeft > (((screenWidth / 6) * 3) - 30)) {
+    if (boxSideLeft < ((screenWidth / 6) - 50) || boxSideLeft > (((screenWidth / 6) * 3) - 30)) {
       showError(CENTER_FACE)
       return;
     }
   }
 
-
   console.log("OK - CENTER HORIZONTAL");
-
-
 
   // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4   
   if (boxSideTop < (screenHeight / 4)) {
@@ -262,8 +275,10 @@ function bioMobile(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
     }
   }
 
-
   console.log("OK - CENTER VERTICAL - BOTTOM");
+
+
+  showSuccess();
 
 }
 
@@ -295,6 +310,13 @@ function bioWeb(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
     return;
   }
 
+  countSuccess++;
+
+  if (countSuccess > 3) {
+    showSuccess();
+  }
+
+
 }
 
 function showNeutral() {
@@ -304,11 +326,14 @@ function showNeutral() {
   lbCountdown.style.display = 'none';
   isCountdown = false;
   countSuccess = 0;
-  borda.style.borderColor = 'gray';
-  lbStatus.innerText = 'Não identificamos uma face';
+  // borda.style.borderColor = 'gray';
+  borda.style.borderColor = 'red';
+  lbStatus.innerText = '';
 }
 
 function showError(message) {
+  countSuccess = 0;
+  countNoFace = 0;
   countdown = 3;
   lbCountdown.innerText = countdown;
   clearInterval(intervar);
@@ -317,12 +342,18 @@ function showError(message) {
   countSuccess = 0;
   borda.style.borderColor = 'red';
   lbStatus.innerText = message;
+  icTake.style.opacity = "0.3";
 }
 
 function showSuccess() {
 
+  countNoFace = 0;
+
   borda.style.borderColor = 'blue';
   lbStatus.innerText = '';
+
+  icTake.style.opacity = "1";
+
 
   if (!hasCaptured) {
     if (!isCountdown) {
@@ -422,12 +453,37 @@ function capture() {
   // Other browsers will fall back to image/png
   // img.src = canvas.toDataURL('image/jpeg');
   //  saveBase64AsFile(canvas.toDataURL('image/jpeg', 0.8), "imageSaved")
-  imgPreview.src = canvas.toDataURL('image/jpeg', 0.8);
-  imgPreview.style.display = 'inline-block';
-  hasCaptured = true;
-  stopStream();
+  // imgPreview.src = canvas.toDataURL('image/jpeg', 0.8);
+  //imgPreview.style.display = 'inline-block';
+  //hasCaptured = true;
+  //stopStream();
 
-  return canvas.toDataURL('image/jpeg', 1.0);
+  var base64 = canvas.toDataURL('image/jpeg', 1.0);
+  console.log(base64);
+
+  // Select the text
+
+  var input = document.createElement("textarea");
+  document.body.appendChild(input);
+  input.style.display = 'none';
+  input.value = base64;
+  input.select();
+  var copied;
+
+  try {
+    // Copy the text
+    copied = document.execCommand('copy');
+  }
+  catch (ex) {
+    copied = false;
+  }
+
+  if (copied) {
+    alert("base64 copiado");
+    console.log ("base64 copiado");
+  }
+
+  return base64;
 }
 
 function stopStream() {
