@@ -11,256 +11,29 @@
 
   <title>Document</title>
 
-
-  <script>
-
-    var i = 1;
-
-    var intro1 = new Image();
-    intro1.src = "intro1.png";
-    var intro2 = new Image();
-    intro2.src = "intro2.png";
-    var intro3 = new Image();
-    intro3.src = "intro3.png";
-    var intro4 = new Image();
-    intro4.src = "intro4.png";
-
-    function next() {
-      if (i >= 4) {
-        document.getElementById("divBackInst").style.display = 'none';
-        return;
-      }
-
-      if(i == 0) {
-        document.getElementById("imgPreview").src = intro.src;
-      }else if(i == 1) {
-        document.getElementById("imgPreview").src = intro2.src;
-      }else if(i == 2) {
-        document.getElementById("imgPreview").src = intro3.src;
-      }else if(i == 3) {
-        document.getElementById("imgPreview").src = intro4.src;
-      }
-
-      i++;
-
-    }
-
-  </script>
-
-
+  <script defer src="FileSaver.js"></script>
   <script src="mobile-detector.js"></script>
   <script src="platform.js"></script>
   <script defer src="face-api.min.js"></script>
-  <script defer src="script.js"></script>
+  <script defer src="frame.js"></script>
   <link rel="stylesheet" href="reset.css" />
-  <style>
-    body {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
+  <link rel="stylesheet" href="frame.css" />
 
-    }
-
-    canvas {
-      position: absolute;
-      /* z-index: -1; */
-    }
-
-    .body-mob .status {
-      width: 100vw;
-      height: 30px;
-      right: 0;
-      margin: 0 auto;
-      background: transparent;
-      display: inline-block;
-      top: 40px;
-      left: 0;
-      z-index: 10;
-      color: black;
-      background-color: transparent;
-      position: absolute;
-      font-weight: 800;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 25px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-
-    .body-mob .video {
-      width: 100%;
-      height: 100%;
-    }
-
-    .body-mob .boxCam {
-      position: relative;
-      background-color: gray;
-    }
-
-    .body-mob #boxCamera {
-      width: 100%;
-      height: 100%;
-    }
-
-    .body-mob #boxCamera .borda {
-      visibility: visible;
-      z-index: 999;
-      position: absolute;
-      width: calc(100vw - 10px);
-      top: 0;
-      left: 0;
-      height: calc(100vh - 10px);
-      display: block;
-      border: 5px solid gray;
-    }
-
-    .body-web .status {
-      width: 100%;
-      height: 30px;
-      right: 0;
-      margin: 0 auto;
-      background: transparent;
-      display: inline-block;
-      top: 40px;
-      left: 0;
-      z-index: 10;
-      color: black;
-      background-color: transparent;
-      position: absolute;
-      font-weight: 800;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 25px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .body-web .video {
-      width: 1080px;
-      height: 720px;
-    }
-
-    .body-web #boxCamera {
-      width: 1080px;
-      height: 720px;
-      position: relative;
-    }
-
-    .body-web #boxCamera .borda {
-      visibility: visible;
-      z-index: 999;
-      position: absolute;
-      width: calc(100% - 10px);
-      top: 0;
-      left: 0;
-      height: calc(100% - 10px);
-      display: block;
-      border: 5px solid gray;
-    }
-
-    .body-web .countdown {
-      width: 100vw;
-      right: 0;
-      margin: 0 auto;
-      background: transparent;
-      display: none;
-      left: 0;
-      z-index: 9999;
-      color: gray;
-      background-color: transparent;
-      position: absolute;
-      font-weight: 100;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 300px;
-      text-align: center;
-      top: 50%;
-      -ms-transform: translateY(-50%);
-      transform: translateY(-50%);
-    }
-
-
-    .body-mob .countdown {
-      width: 100vw;
-      right: 0;
-      margin: 0 auto;
-      background: transparent;
-      display: none;
-      left: 0;
-      z-index: 9999;
-      color: gray;
-      background-color: transparent;
-      position: absolute;
-      font-weight: 100;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 150px;
-      text-align: center;
-      top: 50%;
-      -ms-transform: translateY(-50%);
-      transform: translateY(-50%);
-    }
-
-
-    .body-web .preview {
-      width: 1080px;
-      height: 720px;
-      position: absolute;
-      z-index: 9999;
-      top: 0;
-      left: 0;
-    }
-
-    .preview {
-      max-width: 100%;
-      width: 80%;
-      display: block;
-      position: absolute;
-      top: 20px;
-      left: 0;
-      right: 0;
-      margin: 0 auto;
-
-    }
-
-    .body-mob .take {
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      text-align: center;
-      z-index: 999;
-      width: 70px;
-      height: 70px;
-      top: 90vh;
-      transform: translateY(-100%);
-      left: 50%;
-      margin-right: -50%;
-      transform: translate(-50%, -50%)
-    }
-
-    .backInst {
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      z-index: 99999;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
-      display: inline-block;
-    }
-  </style>
 </head>
 
 <body>
   <div id="divBackInst" class="backInst">
-    <img id="imgPreview" class="preview" src="intro.png" onclick="next()"></img>
+    <img id="imgPreview" class="preview" src=""/>
   </div>
+  <img id="icTake" class="take" style="opacity: 0;"  src="icon_take_pic.png"  onclick="capture()"/>
   <div id="boxCamera" class="boxCamera">
     <video id="video" class="video" autoplay muted playsinline></video>
     <div class="borda" id="borda"></div>
-    <div id="lbStatus" class="status" style="text-align: center;  width: 100vw;">Estamos preparando tudo</div>
+    <div id="lbStatus" class="status" style="text-align: center;  width: 100vw;"></div>
     <div id="lbCountdown" class="countdown"></div>
-    <img id="icTake" class="take" src="icon_take_pic.png"></img>
-
+    <img id="icTakeWeb" class="takeWeb" style="opacity: 0;"  src="icon_take_pic.png"  onclick="capture()"/>
+    <img  id="maskDefault" class="maskdefault"  src="land_frame.png" />
   </div>
-
 </body>
 
 

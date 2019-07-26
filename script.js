@@ -94,7 +94,6 @@ function startVideo() {
 
     }
 
-
     navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
       video.srcObject = stream;
     });
@@ -139,7 +138,7 @@ video.addEventListener('play', () => {
 
         isAllow = true;
         if (detection) {
-          detectFace = true;
+          detectFace = true; 
 
 
 
