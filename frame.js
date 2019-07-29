@@ -174,14 +174,15 @@ window.onload = function () {
                 capture();
             };
 
-            navigator.getUserMedia(
-                {
-                    video: { width: 1280, height: 720 }
-                },
-                stream => video.srcObject = stream,
-                err => console.error(err)
-            )
 
+           var constraints = {
+                video: {  width: 1280, height: 720  }
+
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+                video.srcObject = stream;
+            });
 
 
         }
