@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Acesso Web Frame</title>
+
+  <script defer src="js/FileSaver.js"></script>
+  <script src="js/mobile-detector.js"></script>
+  <script src="js/platform.js"></script>
+  <script defer src="js/face-api.min.js"></script>
+  <script defer src="js/frame.js"></script>
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/frame.css" />
+
+</head>
+
+<body>
+  
+  <div id="divBackInst" class="backInst">
+    <img id="imgPreview" class="preview" src=""/>
+  </div>
+  
+  <img id="icTake" class="take" style="opacity: 0;"  src="img/icon_take_pic.png"  onclick="capture()"/>
+  
+  <div id="boxCamera" class="boxCamera">
+    <video id="video" class="video" autoplay muted playsinline></video>
+
+    <div class="borda" id="borda"></div>
+    <div id="lbStatus" class="status" style="text-align: center;  width: 100vw;"></div>
+    <div id="lbIlu" class="status" style="text-align: center;  width: 100vw; color:greenyellow;"></div>
+    <div id="lbCountdown" class="countdown"></div>
+    <img id="icTakeWeb" class="takeWeb" style="opacity: 0;"  src="img/icon_take_pic.png"  onclick="capture()"/>
+    <img  id="maskDefault" class="maskdefault"  src="img/land_frame.png" />
+
+  </div>
+</body>
+
+
+</html>
