@@ -4,7 +4,7 @@ var iImageIntro = 0;
 const CENTER_FACE = "Centralize o rosto"
 const PULL_FACE = "Aproxime o rosto"
 const PUSH_FACE = "Afaste o rosto"
-const DARK_FACE = "Ambiente muito escuro"
+const DARK_FACE = "Ambiente escuro"
 const LIGHT_FACE = "Ambiente muito claro"
 
 const ONE_SECOND = 1000;
@@ -90,6 +90,7 @@ window.onload = function () {
     var btnCapture = document.getElementById('btnCapture');
     var btnCamera = document.getElementById('btnCamera');
     var video = document.getElementById('video');
+    var spin = document.getElementById('spin');
 
     // btnCamera.style.bottom = '20px';
 
@@ -228,6 +229,8 @@ window.onload = function () {
                     try {
                         faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })).then(detection => {
 
+                           
+
                             isAllow = true;
                             if (detection) {
                                 detectFace = true;
@@ -264,11 +267,14 @@ window.onload = function () {
 
                             }
 
+                            spin.style.display = 'none';
+
                         })
                     }
                     catch (err) {
                         stopProcess();
                         backToDefaultFrame();
+                        spin.style.display = 'none';
                     }
 
 
@@ -303,11 +309,11 @@ window.onload = function () {
         console.log(boxSideRight);
       */
 
-      /* validateLight();
+       validateLight();
 
         if (!isValidateLight) {
             return;
-        } */
+        } 
 
         if (detectIphoneHigLevel(platform.ua)) {
 
@@ -533,7 +539,9 @@ window.onload = function () {
             for (i = 0; i < borda.length; i++) {
                 borda[i].style.borderColor = "red";
             }
-            lbStatus.innerText = message;
+
+            lbStatus.innerHTML = '<span style="background-color: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 25px;">'+ message +'</span>';
+           // lbStatus.innerText = message;
             if (isMobile) {
                 icTake.style.opacity = "0.3";
                 //   btnCapture.style.opacity = "0.3";
@@ -712,19 +720,28 @@ window.onload = function () {
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 200, 200, 500, 1000, 0, 0, 1080, 1920);
 
+        console.log(canvas.toDataURL('image/jpeg'));
+
         getImageLightness(canvas.toDataURL('image/jpeg'), function (brightness) {
+            
             console.log(brightness);
 
-            if (brightness < 100) {
+            lbIlu.innerText = brightness;
+
+            if (brightness < 50) {
                 showError(DARK_FACE);
                 isValidateLight = false;
             } else if (brightness > 180) {
                 showError(LIGHT_FACE);
                 isValidateLight = false;
+            }else{
+                isValidateLight = true;
             }
 
-            isValidateLight = true;
-            //lbIlu.innerText = brightness;
+            lbIlu.innerText = brightness;
+
+            canvas.remove();
+
         });
 
     }

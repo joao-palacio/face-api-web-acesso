@@ -24,6 +24,7 @@
 
 <body>
 
+ 
   <img id="icTake" class="take" style="opacity: 0;" src="img/icon_take_pic.png" onclick="capture()" />
 
   <div id="boxCamera" class="boxCamera max-width max-height">
@@ -35,16 +36,22 @@
     <div class="new-borda border-top"></div>
     <div class="new-borda border-bottom"></div>
 
-    <div id="lbStatus" class="status" style="text-align: center; width: 100vw;"></div>
+    <div id="lbStatus" class="status" style="text-align: center;  min-width: 100px;"></div>
     <div id="lbIlu" class="status" style="text-align: center; width: 100vw; color: greenyellow;"></div>
     <div id="lbCountdown" class="countdown"></div>
     <img id="maskDefault" class="maskdefault" src="img/land_frame.png" />
 
   </div>
 
+  <div class="spinback" id="spin"> 
+      <div class="sk-folding-cube">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
 
 </body>
-
-
 
 </html>

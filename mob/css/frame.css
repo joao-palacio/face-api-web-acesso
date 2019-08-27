@@ -3,27 +3,32 @@
   background: white;
 }
 
+
+.body-mob {
+  overflow: hidden;
+}
+
 canvas {
   position: absolute;
   /* z-index: -1; */
 }
 
+
 .body-mob .status {
-  width: 100vw;
+  min-width: 100px;
   height: 30px;
   right: 0;
   margin: 0 auto;
+  color: #000000;
   background: transparent;
   display: inline-block;
   top: 70px;
   left: 0;
   z-index: 10;
-  color: black;
-  background-color: transparent;
   position: absolute;
   font-weight: 800;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 25px;
+  font-size: 18px;
   font-weight: bold;
   text-align: center;
 }
