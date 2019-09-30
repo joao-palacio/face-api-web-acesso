@@ -24,12 +24,10 @@
 
 <body>
 
- 
   <img id="icTake" class="take" style="opacity: 0;" src="img/icon_take_pic.png" onclick="capture()" />
-
   <div id="boxCamera" class="boxCamera max-width max-height">
 
-    <video id="video" class="video max-width max-height" autoplay muted playsinline></video>
+    <video id="video" class="video max-width" autoplay muted playsinline></video>
 
     <div class="new-borda border-left"></div>
     <div class="new-borda border-right"></div>
@@ -43,15 +41,46 @@
 
   </div>
 
-  <div class="spinback" id="spin"> 
-      <div class="sk-folding-cube">
-          <div class="sk-cube1 sk-cube"></div>
-          <div class="sk-cube2 sk-cube"></div>
-          <div class="sk-cube4 sk-cube"></div>
-          <div class="sk-cube3 sk-cube"></div>
-        </div>
+  <div class="spinback" id="spin">
+    <div class="sk-folding-cube">
+      <div class="sk-cube1 sk-cube"></div>
+      <div class="sk-cube2 sk-cube"></div>
+      <div class="sk-cube4 sk-cube"></div>
+      <div class="sk-cube3 sk-cube"></div>
     </div>
+  </div>
 
 </body>
+
+<script>
+  function ready() {
+    // quando esta função correr o DOM está acessível
+    
+    onSuccessCaptureAtFrame = onSuccessCapture;
+
+    function onSuccessCapture(base64) {
+      console.log(base64);
+    }
+
+    function onFailedCapture(err) {
+
+    }
+  
+  }
+
+  function completed() {
+    document.removeEventListener("DOMContentLoaded", completed);
+    window.removeEventListener("load", completed);
+    ready();
+  }
+
+  if (document.readyState === "complete" ||
+    (document.readyState !== "loading")) {
+    ready(); // está pronto!
+  } else { // ainda não está pronto...
+    document.addEventListener("DOMContentLoaded", completed);
+    window.addEventListener("load", completed);
+  }
+</script>
 
 </html>

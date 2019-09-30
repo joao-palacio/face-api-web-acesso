@@ -54,6 +54,9 @@ var isEnableCapture = false;
 
 var isValidateLight;
 
+var MINIMUM_BRIGHTNESS = 80;
+
+var onSuccessCaptureAtFrame;
 
 function detectar_mobile() {
     if (navigator.userAgent.match(/Android/i)
@@ -145,9 +148,19 @@ window.onload = function () {
             }
 
 
-            navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
-                video.srcObject = stream;
-            });
+            try {
+                navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+                    video.srcObject = stream;
+                });
+            }
+            catch (err) {
+
+                console.log(err);
+                spin.style.display = 'none';
+                stopProcess();
+                backToDefaultFrame();
+
+            }
 
         } else {
 
@@ -157,13 +170,21 @@ window.onload = function () {
             //    capture();
             // };
 
-            navigator.getUserMedia(
-                {
-                    video: { width: 1280, height: 720 }
-                },
-                stream => video.srcObject = stream,
-                err => console.error(err)
-            )
+
+            try {
+
+                navigator.getUserMedia(
+                    {
+                        video: { width: 1280, height: 720 }
+                    },
+                    stream => video.srcObject = stream,
+                    err => console.error(err)
+                )
+            }
+            catch (err) {
+                console.log(err);
+            }
+
 
         }
 
@@ -193,7 +214,7 @@ window.onload = function () {
 
     });
 
-     function startProcess() {
+    function startProcess() {
 
         //  btnCamera.style.display = 'block';
 
@@ -213,14 +234,11 @@ window.onload = function () {
         var isAllow = true;
 
         var timeToInterval = 700;
-
         if (define_performance(platform.ua)) {
             timeToInterval = 500;
         }
 
         intervalVideo = setInterval(async function () {
-
-
 
             if (isRunning) {
 
@@ -229,7 +247,6 @@ window.onload = function () {
                     try {
                         faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.3 })).then(detection => {
 
-                           
 
                             isAllow = true;
                             if (detection) {
@@ -249,7 +266,7 @@ window.onload = function () {
 
                                     /* 150 - compensação do espaço da testa, 
                                       a biblioteca pega do olho pra baixo. */
-                                    validateBioMob((boxWidth / 2), boxHeight, boxSideLeft, (boxSideTop - 150));
+                                    validateBioMob(detection.box, (boxWidth / 2), boxHeight, boxSideLeft, (boxSideTop - 150));
 
                                 } else {
 
@@ -299,40 +316,25 @@ window.onload = function () {
     }
 
 
-    function validateBioMob(boxWidth, boxHeight, boxSideLeft, boxSideTop) {
-
-        //  console.log((boxWidth - 70));
-        //  console.log(((screenWidth / 5) * 3));
-
-        /*
-        var boxSideRight =  (screenWidth - (boxSideLeft +  boxWidth));
-        console.log(boxSideRight);
-      */
-
-       validateLight();
-
-        if (!isValidateLight) {
-            return;
-        } 
-
+    function validateBioMob(box, boxWidth, boxHeight, boxSideLeft, boxSideTop) {
+        
+     
         if (detectIphoneHigLevel(platform.ua)) {
 
-            if ((boxWidth - 200) > ((screenWidth / 5) * 3)) {
+            if ((boxWidth - 150) > ((screenWidth / 5) * 4)) {
                 showError(PUSH_FACE)
                 return;
             }
 
         } else {
 
-            if ((boxWidth - 70) > ((screenWidth / 5) * 3)) {
+            if ((boxWidth - 120) > ((screenWidth / 5) * 3)) {
                 showError(PUSH_FACE)
                 return;
             }
 
         }
 
-        //console.log("box width - " + boxWidth + 80);
-        // console.log("distancia max - " + (((screenWidth / 5) * 2)));
 
         if (detectIphoneHigLevel(platform.ua)) {
             // Verifico a distância do rosto
@@ -376,16 +378,27 @@ window.onload = function () {
             console.log("OK - CENTER HORIZONTAL");
         }
 
+
         // Verifico a centralização vertical da face a partir do eixo x. left: 1/4 right: 3/4   
-        if (boxSideTop < (screenHeight / 4)) {
-            showError(CENTER_FACE)
-            return;
+
+        if (detectIphoneHigLevel(platform.ua)) {
+            if ((boxSideTop / 2) < (screenHeight / 4)) {
+                showError(CENTER_FACE)
+                return;
+            }
+        } else {
+            if (boxSideTop < (screenHeight / 4)) {
+                showError(CENTER_FACE)
+                return;
+            }
         }
+
+
+
 
         if (showLog) {
             console.log("OK - CENTER VERTICAL - TOP");
         }
-
 
         if (detectIphoneHigLevel(platform.ua)) {
             if ((boxSideTop / 2) > ((screenHeight / 4) * 3)) {
@@ -404,9 +417,15 @@ window.onload = function () {
             console.log("OK - CENTER VERTICAL - BOTTOM");
         }
 
+
+          validateLight(box);
+
+          if (!isValidateLight) {
+              return;
+          } 
+
         countSuccess++;
         showSuccess();
-
     }
 
     function validateBioWeb(boxWidth, boxHeight, boxSideLeft, boxSideTop, boxSideBottom) {
@@ -540,8 +559,8 @@ window.onload = function () {
                 borda[i].style.borderColor = "red";
             }
 
-            lbStatus.innerHTML = '<span style="background-color: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 25px;">'+ message +'</span>';
-           // lbStatus.innerText = message;
+            lbStatus.innerHTML = '<span style="background-color: rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 25px;">' + message + '</span>';
+            // lbStatus.innerText = message;
             if (isMobile) {
                 icTake.style.opacity = "0.3";
                 //   btnCapture.style.opacity = "0.3";
@@ -686,7 +705,6 @@ window.onload = function () {
         lbStatus.innerText = "O base64 foi gerado no console";
     }
 
-
     function detectIphoneHigLevel(ua) {
         if (ua.includes("12_3_1") || getHeightResolution() > 2000) {
             //   console.log("iphone high level");
@@ -712,33 +730,31 @@ window.onload = function () {
 
     }
 
-    function validateLight() {
+    function validateLight(box) {
 
         const canvas = document.createElement('canvas');
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 200, 200, 500, 1000, 0, 0, 1080, 1920);
+        canvas.getContext('2d').drawImage(video, ((box.x / 2) + 150), (box.y / 2) + 300, (box.width) - 200, (box.height) - 200, 0, 0, 1080, 1920);
 
-        console.log(canvas.toDataURL('image/jpeg'));
+        // console.log(canvas.toDataURL('image/jpeg'));
 
         getImageLightness(canvas.toDataURL('image/jpeg'), function (brightness) {
-            
-            console.log(brightness);
 
-            lbIlu.innerText = brightness;
-
-            if (brightness < 50) {
+            if (brightness < MINIMUM_BRIGHTNESS) {
                 showError(DARK_FACE);
                 isValidateLight = false;
-            } else if (brightness > 180) {
+            } else if (brightness > 190) {
                 showError(LIGHT_FACE);
                 isValidateLight = false;
-            }else{
+            } else {
                 isValidateLight = true;
             }
 
-            lbIlu.innerText = brightness;
+            brightnessGlobal = brightness;
+
+            //lbIlu.innerText = brightness;
 
             canvas.remove();
 
@@ -786,11 +802,8 @@ window.onload = function () {
                 ctx.drawImage(img, 0, 0, width, height);
 
                 var base64 = canvas.toDataURL("image/jpeg");
-                if (isCaptureBackground) {
-                    submitBack(base64);
-                } else {
-                    submitF(base64);
-                }
+                
+                onSuccessCaptureAtFrame(base64);
 
             }
 
